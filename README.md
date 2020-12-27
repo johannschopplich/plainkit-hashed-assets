@@ -17,6 +17,19 @@ If you are familiar with Git, you can clone Kirby's Plainkit repository from Git
 
     git clone https://github.com/getkirby/plainkit.git
 
+### Compile assets
+Install dependencies first:
+
+    npm install
+
+In development environment, run:
+
+    npm run dev
+
+To compile for production, run:
+
+    npm run build
+
 ## What's Kirby?
 - **[getkirby.com](https://getkirby.com)** – Get to know the CMS.
 - **[Try it](https://getkirby.com/try)** – Take a test ride with our online demo. Or download one of our kits to get started.
