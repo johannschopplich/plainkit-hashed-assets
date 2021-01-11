@@ -39,16 +39,14 @@ composer require johannschopplich/kirby-hashed-assets
 
 > Head over to the [https://github.com/johannschopplich/plainkit-hashed-assets](plainkit-hashed-assets) repository to see a complete build setup in action.
 
-To rename unhashed CSS and JS assets inside the `assets` directory after each build and generate an asset `manifest.json`, execute the [`hashBuildAssets.js`](scripts/hashBuildAssets.js) script. You can copy it to your build 
-
-You may add the following npm script to hash file names and generate the manifest after each build iteration automatically:
+To rename unhashed CSS and JS assets inside the `assets` directory after each build and generate an asset `manifest.json`, execute the [`hashAssets.js`](scripts/hashAssets.js) script. You can copy it to your root directory or add a npm script to your `package.json` (recommended):
 
 ```js
 {
   "scripts": {
     "clean": "rm -rf public/assets/{css,js}",
     "assets:build": "...",
-    "assets:hash": "node site/plugins/kirby-hashed-assets/scripts/hashBuildAssets.js",
+    "assets:hash": "node site/plugins/kirby-hashed-assets/scripts/hashAssets.js",
     "build": "npm run clean && npm run assets:build && npm run assets:hash"
   }
 }
@@ -58,7 +56,7 @@ Now pass asset paths to Kirby's asset helpers like you normally would:
 
 ```php
 <?= js('assets/js/main.js') ?>
-// Exemplary output: `<script src="https://example.com/assets/js/main.9ad649fd.js"></script>
+// `<script src="https://example.com/assets/js/main.9ad649fd.js"></script>
 ```
 
 If a corresponding hashed file is found in the `manifest.json`, it will be used and rendered.
@@ -67,7 +65,7 @@ For template-specific assets, use `@template` (instead of `@auto`):
 
 ```php
 <?= js('@template') ?>
-// Exemplary output: `<script src="https://example.com/assets/js/templates/home.92c6b511.js"></script>`
+// `<script src="https://example.com/assets/js/templates/home.92c6b511.js"></script>`
 ```
 
 ### Manual hashing
@@ -80,7 +78,7 @@ Take an imaginary `main.js` for example. Just include it like you normally would
 <?= js('assets/js/main.js') ?>
 ```
 
-Now rename the file in the format of `main.{hash}.js`. You may use the current date, e.g.: `main.20201226.js`. Exemplary outout:
+Now rename the file in the format of `main.{hash}.js`. You may use the current date, e.g.: `main.20201226.js`, which will output:
 
 ```html
 <script src="https://example.com/assets/js/main.20201226.js"></script>

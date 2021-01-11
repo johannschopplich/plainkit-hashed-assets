@@ -2,24 +2,21 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "clean": "shx rm -rf assets/{css,js}",
-    "sass:main": "sass --style=compressed src/scss/main.scss assets/css/main.css",
-    "sass:templates": "sass --style=compressed src/scss/templates:assets/css/templates",
-    "js:main": "rollup --config",
-    "assets:hash": "node site/plugins/kirby-hashed-assets/scripts/hashBuildAssets.js",
-    "dev": "concurrently \"npm run sass:main -- --embed-source-map --watch\" \"npm run sass:templates -- --embed-source-map --watch\" \"npm run js:main -- --watch\"",
-    "build": "npm run clean && npm run sass:main -- --no-source-map && npm run sass:templates -- --no-source-map && npm run js:main && npm run assets:hash",
+    "assets:clean": "shx rm -rf public/assets/{css,js}",
+    "assets:hash": "node scripts/hashAssets.js",
+    "sass:main": "sass --style=compressed src/scss/main.scss public/assets/css/main.css",
+    "sass:templates": "sass --style=compressed src/scss/templates:public/assets/css/templates",
+    "esbuild": "node scripts/incrementalEsbuild.js",
+    "dev": "concurrently \"npm run sass:main -- --embed-source-map --watch\" \"npm run sass:templates -- --embed-source-map --watch\" \"npm run esbuild\"",
+    "build": "npm run assets:clean && npm run sass:main -- --no-source-map && npm run sass:templates -- --no-source-map && NODE_ENV=production npm run esbuild && npm run assets:hash",
     "test": "echo \"No test specified\""
   },
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^17.0.0",
-    "@rollup/plugin-node-resolve": "^11.0.1",
-    "@rollup/plugin-replace": "^2.3.4",
+    "chokidar": "^3.5.0",
     "concurrently": "^5.3.0",
-    "fast-glob": "^3.2.4",
-    "rollup": "^2.35.1",
-    "rollup-plugin-esbuild": "^2.6.1",
-    "sass": "^1.30.0",
-    "shx": "^0.3.3"
+    "esbuild": "^0.8.31",
+    "sass": "^1.32.2",
+    "shx": "^0.3.3",
+    "tiny-glob": "^0.2.8"
   }
 }
