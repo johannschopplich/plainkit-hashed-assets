@@ -3,8 +3,7 @@ import fg from 'fast-glob'
 import replace from '@rollup/plugin-replace'
 import resolve from '@rollup/plugin-node-resolve'
 import commonjs from '@rollup/plugin-commonjs'
-import babel from '@rollup/plugin-babel'
-import { terser } from 'rollup-plugin-terser'
+import esbuild from 'rollup-plugin-esbuild'
 
 const inputDir = 'src/js'
 const inputFiles = []
@@ -47,8 +46,7 @@ const createOutput = path => {
       }),
       resolve(),
       commonjs(),
-      production && babel({ babelHelpers: 'bundled' }),
-      production && terser()
+      esbuild({ target: 'es2018' })
     ]
   }
 }
