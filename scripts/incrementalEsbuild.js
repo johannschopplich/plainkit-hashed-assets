@@ -9,7 +9,7 @@ import glob from 'tiny-glob'
     color: true,
     entryPoints: [
       './src/js/main.js',
-      ...await glob('./src/js/templates/*.js')
+      ...fs.existsSync('./src/js/templates') ? await glob('./src/js/templates/*.js') : []
     ],
     outdir: './public/assets/js',
     define: {
