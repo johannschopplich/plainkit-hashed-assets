@@ -1,3 +1,4 @@
+import fs from 'fs'
 import chokidar from 'chokidar'
 import esbuild from 'esbuild'
 import glob from 'tiny-glob'
