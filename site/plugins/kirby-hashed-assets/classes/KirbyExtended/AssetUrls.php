@@ -3,11 +3,11 @@
 namespace KirbyExtended;
 
 use Kirby\Cms\Url;
-use Kirby\Data\Json;
+use Kirby\Data\Data;
 use Kirby\Toolkit\F;
 use Kirby\Toolkit\Str;
 
-class AssetHashes
+class AssetUrls
 {
     protected static array $manifest;
 
@@ -25,14 +25,14 @@ class AssetHashes
         $manifestPath = kirby()->root('assets') . '/manifest.json';
 
         static::$manifest = F::exists($manifestPath)
-            ? Json::decode(F::read($manifestPath))
+            ? Data::read($manifestPath)
             : [];
 
         return static::$manifest;
     }
 
     /**
-     * Handle CSS assets
+     * Returns the hashed URL for a CSS asset if present
      *
      * @param array $args
      * @return string
@@ -44,7 +44,7 @@ class AssetHashes
     }
 
     /**
-     * Handle JS assets
+     * Returns the hashed URL for a JS asset if present
      *
      * @param array $args
      * @return string
@@ -71,29 +71,30 @@ class AssetHashes
             return $url;
         }
 
-        $path = Url::path($url, true);
-        $assetsDir = Str::ltrim($kirby->root('assets'), kirby()->root());
-        $absolutePath = $kirby->root() . $path;
+        $path = Url::path($url);
 
         // Build path to template asset
         if ($url === '@template') {
-            $path = "{$assetsDir}/{$extension}/templates/" . $kirby->site()->page()->template()->name() . ".{$extension}";
+            $path = "assets/{$extension}/templates/" . $kirby->site()->page()->template()->name() . ".{$extension}";
         }
 
         // Check if the unhashed file exists before looking it up in the manifest
-        if (F::exists($absolutePath)) {
-            $filePath = Str::ltrim($absolutePath, $kirby->root());
-            return $filePath;
+        if (F::exists($path, $kirby->root())) {
+            return '/' . $path;
         }
 
         // Check if the manifest contains the given file
         if (array_key_exists($path, static::useManifest())) {
-            return static::useManifest()[$path];
+            return '/' . static::useManifest()[$path];
         }
 
-        // Replace trailing `.{extension}` extension with `[.-]*.{extension}`,
+        // Replace trailing `.{extension}` extension with `.*.{extension}`,
         // with the asterix representing a hash to look for
-        $patternPath = preg_replace('/(\.' . $extension . ')+$/', '[.-]*$1', $absolutePath);
+        $patternPath = preg_replace(
+            '/(\.' . $extension . ')$/',
+            '.*$1',
+            $kirby->root() . '/' . $path
+        );
 
         // Find a hashed file outside of a manifest
         $fileMatch = glob($patternPath);

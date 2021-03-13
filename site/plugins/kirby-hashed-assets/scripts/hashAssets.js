@@ -7,7 +7,7 @@ const indexPath = fs.existsSync('public') ? 'public/' : ''
 const assetsDir = `${indexPath}assets`
 const assetFiles = glob(`${assetsDir}/{css,js}/**/*.{css,js}`)
 const manifest = {}
-const hashedFilenameRegExp = /[.-]\w{8}\./
+const hashedFilenameRegExp = /\w{8}\.(css|js)$/
 
 /**
  * Returns a 8-digit hash for a given file
@@ -22,12 +22,22 @@ function createHash (path) {
   return hex.substr(0, 8)
 }
 
+/**
+ * Trim the index dir from a given path
+ *
+ * @param {string} path Path to the file
+ * @returns {string} Cleaned path
+ */
+function trimIndex (path) {
+  return path.replace(new RegExp(`^${indexPath}`))
+}
+
 for (const filePath of assetFiles) {
   const dirname = path.dirname(filePath)
   const extension = path.extname(filePath)
   const filename = path.basename(filePath)
 
-  // Make sure file hasn't be renamed already or is a lazy rollup import
+  // Make sure file hasn't been hashed already
   if (hashedFilenameRegExp.test(filename)) continue
 
   const hash = createHash(filePath)
@@ -35,7 +45,7 @@ for (const filePath of assetFiles) {
   const newFilePath = `${dirname}/${newFilename}`
   fs.renameSync(filePath, newFilePath)
 
-  manifest['/' + filePath.slice(indexPath.length)] = '/' + newFilePath.slice(indexPath.length)
+  manifest[trimIndex(filePath)] = trimIndex(newFilePath)
 }
 
 fs.writeFileSync(`${assetsDir}/manifest.json`, JSON.stringify(manifest, null, 2))
