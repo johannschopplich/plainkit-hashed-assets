@@ -3,19 +3,17 @@
   "type": "module",
   "scripts": {
     "assets:clean": "shx rm -rf public/assets/{css,js}",
-    "assets:hash": "node scripts/hashAssets.js",
-    "sass:main": "sass --style=compressed src/scss/main.scss public/assets/css/main.css",
-    "sass:templates": "sass --style=compressed src/scss/templates:public/assets/css/templates",
-    "esbuild": "node scripts/incrementalEsbuild.js",
-    "dev": "concurrently \"npm run sass:main -- --embed-source-map --watch\" \"npm run sass:templates -- --embed-source-map --watch\" \"npm run esbuild\"",
-    "build": "npm run assets:clean && npm run sass:main -- --no-source-map && npm run sass:templates -- --no-source-map && NODE_ENV=production npm run esbuild && npm run assets:hash",
+    "assets:hash": "node site/plugins/kirby-hashed-assets/scripts/hashAssets.js",
+    "build:css": "sass --style=compressed src/sass/main.sass public/assets/css/main.css",
+    "build:js": "esbuild --bundle src/js/main.js --outfile=public/assets/js/main.js",
+    "dev": "concurrently \"npm run build:css -- --watch\" \"npm run build:js -- --watch\"",
+    "build": "npm run assets:clean && npm run build:css -- --no-source-map && npm run build:js && npm run assets:hash",
     "test": "echo \"No test specified\""
   },
   "devDependencies": {
-    "chokidar": "^3.5.0",
-    "concurrently": "^5.3.0",
-    "esbuild": "^0.8.31",
-    "sass": "^1.32.2",
+    "concurrently": "^6.0.0",
+    "esbuild": "^0.9.2",
+    "sass": "^1.32.8",
     "shx": "^0.3.3",
     "tiny-glob": "^0.2.8"
   }
